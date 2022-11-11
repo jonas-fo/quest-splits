@@ -73,8 +73,13 @@ public class QuestSplitsOverlay extends OverlayPanel
 
 		panelComponent.setPreferredSize(new Dimension(175, 100));
 		panelComponent.setPreferredLocation(new Point(0,0));
-		panelComponent.getChildren().add(LineComponent.builder().left("Hello").right(textFields[2].getText()).build());
-		panelComponent.getChildren().add(LineComponent.builder().left("Hello").right("World").build());
+		panelComponent.getChildren().add(LineComponent.builder().left(textFields[0].getText()).right(textFields[2].getText()).build());
+		for(String time : plugin.getTimes().keySet())
+		{
+			panelComponent.getChildren().add(LineComponent.builder().left(time).right(plugin.getTimes().get(time)).build());
+		}
+		//panelComponent.getChildren().add(LineComponent.builder().left("Hello").right(textFields[2].getText()).build());
+		//panelComponent.getChildren().add(LineComponent.builder().left("Hello").right("World").build());
 
 		return super.render(graphics);
 	}

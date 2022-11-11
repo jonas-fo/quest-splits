@@ -8,20 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetConfig;
-import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.api.widgets.WidgetType;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.wintertodt.WintertodtConfig;
-import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayManager;
-import net.runelite.client.ui.overlay.OverlayPanel;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -53,7 +46,7 @@ public class QuestSplitsPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		//client.getWidget(46596101).getParent().setHidden(true);
+		changeKeyItems();
 		log.info("Example started!");
 	}
 
@@ -72,7 +65,6 @@ public class QuestSplitsPlugin extends Plugin
 			//topWidget = client.getWidget(46596101).getParent();
 		}
 		//client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Example says " + config.getKeyItems(), null);
-		changeKeyItems();
 	}
 
 	@Subscribe
@@ -86,6 +78,7 @@ public class QuestSplitsPlugin extends Plugin
 			//client.getWidget(46596101).getParent().setHidden(true);
 			overlay.setTextFields(textFields);
 			overlayManager.add(overlay);
+			changeKeyItems();
 		}
 	}
 
@@ -116,13 +109,8 @@ public class QuestSplitsPlugin extends Plugin
 
 	@Subscribe
 	public void onConfigChanged(ConfigChanged event) {
-		if (topWidget != null && event.getKey().equals("showSplits")) {
-			topWidget.setHidden(!config.showSplits());
-		} else {
-			System.out.println(event.getNewValue());
-			System.out.println(keyItems.peek());
-			changeKeyItems();
-		}
+		times = null;
+		changeKeyItems();
 	}
 
 	@Subscribe
@@ -140,8 +128,7 @@ public class QuestSplitsPlugin extends Plugin
 		for( String item : inventoryItems){
 			if(Objects.equals(item.toLowerCase(), keyItems.peek().toLowerCase()))
 			{
-				//times[splitNumber] = "" + textFields[2].getText();
-				splitNumber++;
+				times.put(item.toLowerCase(), "" + textFields[2].getText());
 				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Match found in " + keyItems.remove(), null);
 				return;
 			}
@@ -159,10 +146,13 @@ public class QuestSplitsPlugin extends Plugin
 		keyItems = new LinkedList<>();
 		String[] items = config.getKeyItems().split(",");
 		keyItems.addAll(Arrays.asList(items));
-		times = new HashMap<String, String>();
-		for(String keyItem : keyItems)
+		if(times == null)
 		{
-			times.put(keyItem, "0:00.00");
+			times = new LinkedHashMap<String, String>();
+			for(String keyItem : keyItems)
+			{
+				times.put(keyItem.toLowerCase(), "0:00.00");
+			}
 		}
 
 	}
@@ -173,6 +163,11 @@ public class QuestSplitsPlugin extends Plugin
 		{
 			inventoryItems.add(newItem);
 		}
+	}
+
+	public Map<String, String> getTimes()
+	{
+		return times;
 	}
 
 	// Remember to remove
