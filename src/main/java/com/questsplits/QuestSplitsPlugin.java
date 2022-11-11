@@ -26,7 +26,7 @@ public class QuestSplitsPlugin extends Plugin
 {
 
 	private List<String> inventoryItems = new ArrayList<>();
-	private Queue<String> keyItems = new LinkedList<>();
+	private Queue<String> keyItems;
 	private Map<String, String> times;
 	private int splitNumber = 0;
 	private Widget[] textFields;
@@ -78,7 +78,12 @@ public class QuestSplitsPlugin extends Plugin
 			//client.getWidget(46596101).getParent().setHidden(true);
 			overlay.setTextFields(textFields);
 			overlayManager.add(overlay);
-			changeKeyItems();
+			if(keyItems == null || times == null)
+			{
+				changeKeyItems();
+			}
+		} else {
+			keyItems = null;
 		}
 	}
 
@@ -109,7 +114,6 @@ public class QuestSplitsPlugin extends Plugin
 
 	@Subscribe
 	public void onConfigChanged(ConfigChanged event) {
-		times = null;
 		changeKeyItems();
 	}
 
@@ -146,15 +150,11 @@ public class QuestSplitsPlugin extends Plugin
 		keyItems = new LinkedList<>();
 		String[] items = config.getKeyItems().split(",");
 		keyItems.addAll(Arrays.asList(items));
-		if(times == null)
+		times = new LinkedHashMap<String, String>();
+		for(String keyItem : keyItems)
 		{
-			times = new LinkedHashMap<String, String>();
-			for(String keyItem : keyItems)
-			{
-				times.put(keyItem.toLowerCase(), "0:00.00");
-			}
+			times.put(keyItem.toLowerCase(), "0:00.00");
 		}
-
 	}
 	void addItemToInventory(Item item)
 	{
