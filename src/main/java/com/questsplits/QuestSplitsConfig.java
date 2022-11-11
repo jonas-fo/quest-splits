@@ -16,4 +16,14 @@ public interface QuestSplitsConfig extends Config
 	{
 		return "Hello";
 	}
+
+	@ConfigItem(
+			keyName = "showSplits",
+			name = "Show Splits",
+			description = "Shows the splits on the side"
+	)
+	default boolean showSplits()
+	{
+		return true;
+	}
 }
