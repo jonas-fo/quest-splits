@@ -14,6 +14,7 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.http.api.item.ItemType;
 
 import java.util.*;
 import java.util.List;
@@ -48,7 +49,6 @@ public class QuestSplitsPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		changeKeyItems();
 		log.info("Example started!");
 	}
 
@@ -62,7 +62,7 @@ public class QuestSplitsPlugin extends Plugin
 	public void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
 		if(client.getWidget(widgetId) == null) {
-			//topWidget = null;
+			changeKeyItems();
 		} else {
 			//topWidget = client.getWidget(46596101).getParent();
 		}
@@ -76,7 +76,6 @@ public class QuestSplitsPlugin extends Plugin
 		{
 			topWidget = client.getWidget(widgetId).getParent();
 			textFields = client.getWidget(widgetId).getChildren();
-			System.out.println(topWidget.getId());
 			//client.getWidget(46596101).getParent().setHidden(true);
 			overlay.setTextFields(textFields);
 			overlayManager.add(overlay);
@@ -113,7 +112,7 @@ public class QuestSplitsPlugin extends Plugin
 	@Subscribe
 	public void onConfigChanged(ConfigChanged event) {
 		if(Objects.equals(event.getKey(), "splitItems") && !setConfigChanged) {
-			changeKeyItems();
+			//changeKeyItems();
 		}
 		setConfigChanged = false;
 	}
@@ -128,6 +127,7 @@ public class QuestSplitsPlugin extends Plugin
 		}
 		for( Item item : itemContainerChanged.getItemContainer().getItems())
 		{
+			item.getId();
 			addItemToInventory(item);
 		}
 		for( String item : inventoryItems){
@@ -170,10 +170,18 @@ public class QuestSplitsPlugin extends Plugin
 		keyItems = new LinkedList<>();
 		bestTimes = new LinkedHashMap<>();
 		String[] items = config.getSplitItems().split(",");
-		for(String item : items){
-			System.out.println(config.getSplitItems());
-			keyItems.add(item.split("_")[0]);
-			bestTimes.put(item.split("_")[0], item.split("_")[1]);
+		for(String item : items)
+		{
+			String[] splitted = item.split("_");
+			try
+			{
+				int id = Integer.parseInt(splitted[0]);
+				splitted[0] = client.getItemDefinition(id).getName().toLowerCase();
+			} catch (Exception ignored)
+			{
+			}
+			keyItems.add(splitted[0]);
+			bestTimes.put(splitted[0], splitted[1]);
 		}
 		times = new LinkedHashMap<String, String>();
 		for(String keyItem : keyItems)
