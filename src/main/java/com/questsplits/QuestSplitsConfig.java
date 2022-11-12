@@ -4,18 +4,24 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-@ConfigGroup("example")
+@ConfigGroup("questsplits")
 public interface QuestSplitsConfig extends Config
 {
 	@ConfigItem(
-		keyName = "items",
-		name = "Key Items",
-		description = "Splits when you recieve these items"
+		keyName = "splitItems",
+		name = "Split Items",
+		description = "Splits when you receive these items, with best times, write 0:00.00 for no best time, usage (item)_(time),(item)_(time)"
 	)
-	default String getKeyItems()
+	default String getSplitItems()
 	{
-		return "Hello";
+		return "egg_0:00.00,pot of flour_0:00.00,bucket of milk_0:00.00";
 	}
+	@ConfigItem(
+			keyName = "splitItems",
+			name = "",
+			description = ""
+	)
+	void setSplitItems(String key);
 
 	@ConfigItem(
 			keyName = "showSplits",
