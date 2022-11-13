@@ -14,7 +14,6 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
-import net.runelite.http.api.item.ItemType;
 
 import java.util.*;
 import java.util.List;
@@ -25,6 +24,7 @@ import java.util.List;
 )
 public class QuestSplitsPlugin extends Plugin
 {
+	// 2400_1:07.70,2401_5:01.10,2399_5:01.10
 
 	private int widgetId = 46596101;
 	private boolean setConfigChanged = false;
@@ -106,7 +106,6 @@ public class QuestSplitsPlugin extends Plugin
 		//client.getWidget(WidgetInfo.INVENTORY).setChildren(inventory);
 		// 46596101 is the id of the speedrunning widget
 		//client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Example says " + getKeyItems()[0], null);
-
 	}
 
 	@Subscribe
@@ -127,20 +126,27 @@ public class QuestSplitsPlugin extends Plugin
 		}
 		for( Item item : itemContainerChanged.getItemContainer().getItems())
 		{
-			item.getId();
 			addItemToInventory(item);
 		}
 		for( String item : inventoryItems){
-			if(Objects.equals(item.toLowerCase(), keyItems.peek().toLowerCase()))
+			System.out.println(item);
+			String[] dupeCheck = item.split(";");
+			if(item.toLowerCase().contains(keyItems.peek().toLowerCase()))
 			{
 				String time = "" + textFields[2].getText();
-				times.put(item.toLowerCase(), time);
+				if(keyItems.peek().toLowerCase().contains(";")) times.put(item.toLowerCase(), time);
+				else times.put(dupeCheck[0].toLowerCase(), time);
 				StringBuilder newSplits = new StringBuilder();
 				String[] splits = config.getSplitItems().split(",");
 				for(String split : splits)
 				{
 					String[] seperated = split.split("_");
-					if(split.toLowerCase().startsWith(item.toLowerCase()) && (timeToInt(seperated[1]) > timeToInt(time) || timeToInt(seperated[1]) == 0))
+					if(split.toLowerCase().startsWith(dupeCheck[0].toLowerCase()) && (timeToInt(seperated[1]) > timeToInt(time) || timeToInt(seperated[1]) == 0))
+					{
+						seperated[1] = time;
+						bestTimes.put(dupeCheck[0].toLowerCase(),time);
+					}
+					if(seperated[0].toLowerCase().startsWith(dupeCheck[1].toLowerCase()) && (timeToInt(seperated[1]) > timeToInt(time) || timeToInt(seperated[1]) == 0))
 					{
 						seperated[1] = time;
 						bestTimes.put(item.toLowerCase(),time);
@@ -176,7 +182,7 @@ public class QuestSplitsPlugin extends Plugin
 			try
 			{
 				int id = Integer.parseInt(splitted[0]);
-				splitted[0] = client.getItemDefinition(id).getName().toLowerCase();
+				splitted[0] = client.getItemDefinition(id).getName().toLowerCase() + ";" + id;
 			} catch (Exception ignored)
 			{
 			}
@@ -191,7 +197,7 @@ public class QuestSplitsPlugin extends Plugin
 	}
 	void addItemToInventory(Item item)
 	{
-		String newItem = client.getItemDefinition(item.getId()).getName();
+		String newItem = client.getItemDefinition(item.getId()).getName() + ";" + item.getId();
 		if(!inventoryItems.contains(newItem) && !Objects.equals(newItem, "null"))
 		{
 			inventoryItems.add(newItem);
