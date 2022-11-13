@@ -118,7 +118,7 @@ public class QuestSplitsPlugin extends Plugin
 	public void onItemContainerChanged(ItemContainerChanged itemContainerChanged)
 	{
 		inventoryItems = new ArrayList<>();
-		if(!(itemContainerChanged.getContainerId() == InventoryID.INVENTORY.getId()))
+		if(!(itemContainerChanged.getContainerId() == InventoryID.INVENTORY.getId() || itemContainerChanged.getContainerId() == InventoryID.EQUIPMENT.getId()))
 		{
 			return;
 		}
@@ -129,7 +129,7 @@ public class QuestSplitsPlugin extends Plugin
 		for( String item : inventoryItems){
 			System.out.println(item);
 			String[] dupeCheck = item.split(";");
-			if(item.toLowerCase().contains(keyItems.peek().toLowerCase()))
+			if(dupeCheck[0].equalsIgnoreCase(keyItems.peek()) || item.equalsIgnoreCase(keyItems.peek()))
 			{
 				String time = "" + textFields[2].getText();
 				if(keyItems.remove().toLowerCase().contains(";")) times.put(item.toLowerCase(), time);
