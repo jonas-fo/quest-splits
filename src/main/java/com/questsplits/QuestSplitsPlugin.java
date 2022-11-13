@@ -28,6 +28,7 @@ public class QuestSplitsPlugin extends Plugin
 
 	private int widgetId = 46596101;
 	private boolean setConfigChanged = false;
+	private boolean worldChange = false;
 	private List<String> inventoryItems = new ArrayList<>();
 	private Queue<String> keyItems;
 	private Map<String, String> times;
@@ -62,7 +63,7 @@ public class QuestSplitsPlugin extends Plugin
 	public void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
 		if(client.getWidget(widgetId) == null) {
-			changeKeyItems();
+			//changeKeyItems();
 		} else {
 			//topWidget = client.getWidget(46596101).getParent();
 		}
@@ -83,11 +84,18 @@ public class QuestSplitsPlugin extends Plugin
 			{
 				changeKeyItems();
 			}
-		} else {
+			worldChange = false;
+		} else if (!worldChange){
 			keyItems = null;
 		}
 	}
 
+	@Subscribe
+	public void onWorldChanged(WorldChanged worldChanged)
+	{
+		// This is so the times don't reset when changing worlds
+		worldChange = true;
+	}
 
 	@Subscribe
 	public void onGameTick(GameTick gameStateChanged)
