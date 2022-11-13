@@ -34,7 +34,6 @@ import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -48,10 +47,7 @@ import java.util.List;
 )
 public class QuestSplitsPlugin extends Plugin
 {
-	// 2400_1:07.70,2401_5:01.10,2399_5:01.10
-
 	private int widgetId = 46596101;
-	private boolean setConfigChanged = false;
 	private boolean worldChange = false;
 	private List<String> inventoryItems = new ArrayList<>();
 	private Queue<String> keyItems;
@@ -84,24 +80,12 @@ public class QuestSplitsPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onGameStateChanged(GameStateChanged gameStateChanged)
-	{
-		if(client.getWidget(widgetId) == null) {
-			//changeKeyItems();
-		} else {
-			//topWidget = client.getWidget(46596101).getParent();
-		}
-		//client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Example says " + config.getKeyItems(), null);
-	}
-
-	@Subscribe
 	public void onWidgetLoaded(WidgetLoaded widgetLoaded)
 	{
 		if(client.getWidget(widgetId) != null)
 		{
 			topWidget = client.getWidget(widgetId).getParent();
 			textFields = client.getWidget(widgetId).getChildren();
-			//client.getWidget(46596101).getParent().setHidden(true);
 			overlay.setTextFields(textFields);
 			overlayManager.add(overlay);
 			if(keyItems == null || times == null)
@@ -128,24 +112,6 @@ public class QuestSplitsPlugin extends Plugin
 		//For some reason the timer doesn't update without the next 2 lines
 		textFields = client.getWidget(widgetId).getChildren();
 		overlay.setTextFields(textFields);
-		for(Widget widget : client.getWidget(widgetId).getChildren())
-		{
-			//client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", times[0], null);
-			//client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Example says " + widget.getRelativeX() + " y = " + widget.getRelativeY(), null);
-			//client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "" + widget.getText(), null);
-			//System.out.println(widget.getText() + " " + widget.getId());
-		}
-		//client.getWidget(WidgetInfo.INVENTORY).setChildren(inventory);
-		// 46596101 is the id of the speedrunning widget
-		//client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Example says " + getKeyItems()[0], null);
-	}
-
-	@Subscribe
-	public void onConfigChanged(ConfigChanged event) {
-		if(Objects.equals(event.getKey(), "splitItems") && !setConfigChanged) {
-			//changeKeyItems();
-		}
-		setConfigChanged = false;
 	}
 
 	@Subscribe
@@ -166,7 +132,7 @@ public class QuestSplitsPlugin extends Plugin
 			if(item.toLowerCase().contains(keyItems.peek().toLowerCase()))
 			{
 				String time = "" + textFields[2].getText();
-				if(keyItems.peek().toLowerCase().contains(";")) times.put(item.toLowerCase(), time);
+				if(keyItems.remove().toLowerCase().contains(";")) times.put(item.toLowerCase(), time);
 				else times.put(dupeCheck[0].toLowerCase(), time);
 				StringBuilder newSplits = new StringBuilder();
 				String[] splits = config.getSplitItems().split(",");
@@ -189,9 +155,7 @@ public class QuestSplitsPlugin extends Plugin
 						newSplits.append(",");
 					}
 				}
-				setConfigChanged = true;
 				config.setSplitItems(newSplits.toString());
-				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Match found in " + keyItems.remove(), null);
 				return;
 			}
 		}
@@ -244,17 +208,6 @@ public class QuestSplitsPlugin extends Plugin
 	public Map<String, String> getBestTimes()
 	{
 		return bestTimes;
-	}
-
-	// Remember to remove
-	void printInventory()
-	{
-		String string = "";
-		for(String item : inventoryItems)
-		{
-			string += item + ", ";
-		}
-		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", string, null);
 	}
 
 	int timeToInt(String time)
