@@ -127,24 +127,25 @@ public class QuestSplitsPlugin extends Plugin
 			addItemToInventory(item);
 		}
 		for( String item : inventoryItems){
-			System.out.println(item);
+			// Quests like Dragon Slayer have multiple items with the same name (silverlight key for DS). This allows to use either item ids or names
 			String[] dupeCheck = item.split(";");
 			if(dupeCheck[0].equalsIgnoreCase(keyItems.peek()) || item.equalsIgnoreCase(keyItems.peek()))
 			{
+				String foundItem = keyItems.remove().toLowerCase();
 				String time = "" + textFields[2].getText();
-				if(keyItems.remove().toLowerCase().contains(";")) times.put(item.toLowerCase(), time);
+				if(foundItem.contains(";")) times.put(item.toLowerCase(), time);
 				else times.put(dupeCheck[0].toLowerCase(), time);
 				StringBuilder newSplits = new StringBuilder();
 				String[] splits = config.getSplitItems().split(",");
 				for(String split : splits)
 				{
 					String[] seperated = split.split("_");
-					if(split.toLowerCase().startsWith(dupeCheck[0].toLowerCase()) && (timeToInt(seperated[1]) > timeToInt(time) || timeToInt(seperated[1]) == 0))
+					if(seperated[0].equalsIgnoreCase(foundItem) && (timeToInt(seperated[1]) > timeToInt(time) || timeToInt(seperated[1]) == 0))
 					{
 						seperated[1] = time;
 						bestTimes.put(dupeCheck[0].toLowerCase(),time);
 					}
-					if(seperated[0].toLowerCase().startsWith(dupeCheck[1].toLowerCase()) && (timeToInt(seperated[1]) > timeToInt(time) || timeToInt(seperated[1]) == 0))
+					if(foundItem.toLowerCase().endsWith(seperated[0].toLowerCase()) && (timeToInt(seperated[1]) > timeToInt(time) || timeToInt(seperated[1]) == 0))
 					{
 						seperated[1] = time;
 						bestTimes.put(item.toLowerCase(),time);
@@ -183,7 +184,7 @@ public class QuestSplitsPlugin extends Plugin
 			{
 			}
 			keyItems.add(splitted[0]);
-			bestTimes.put(splitted[0], splitted[1]);
+			bestTimes.put(splitted[0].toLowerCase(), splitted[1]);
 		}
 		times = new LinkedHashMap<String, String>();
 		for(String keyItem : keyItems)
@@ -217,7 +218,8 @@ public class QuestSplitsPlugin extends Plugin
 		return Integer.parseInt(result);
 	}
 
-	public QuestSplitsConfig getConfig() {
+	public QuestSplitsConfig getConfig()
+	{
 		return config;
 	}
 }
