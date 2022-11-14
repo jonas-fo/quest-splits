@@ -42,11 +42,8 @@ public class QuestSplitsOverlay extends OverlayPanel
 	@Inject
 	public QuestSplitsOverlay(QuestSplitsPlugin plugin, Widget[] textFields)
 	{
-		//this.textFields = textFields;
 		this.plugin = plugin;
 		setMovable(true);
-		//this.setDragTargetable(true);
-		this.setBounds(new Rectangle(0, 0, 300, 100));
 		setPriority(OverlayPriority.HIGHEST);
 	}
 
@@ -68,13 +65,10 @@ public class QuestSplitsOverlay extends OverlayPanel
 
 		panelComponent.setPreferredSize(new Dimension(300, 100));
 		panelComponent.setPreferredLocation(new Point(0,0));
-		panelComponent.getChildren().add(LineComponent.builder().left(textFields[0].getText()).right(textFields[2].getText()).build());
 		for(String time : plugin.getTimes().keySet())
 		{
 			panelComponent.getChildren().add(LineComponent.builder().left(time).right(plugin.getTimes().get(time) + " " + plugin.getBestTimes().get(time)).build());
 		}
-		//panelComponent.getChildren().add(LineComponent.builder().left("Hello").right(textFields[2].getText()).build());
-		//panelComponent.getChildren().add(LineComponent.builder().left("Hello").right("World").build());
 
 		return super.render(graphics);
 	}
