@@ -58,7 +58,7 @@ public class QuestSplitsOverlay extends OverlayPanel
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!plugin.getConfig().showSplits())
+		if (textFields == null || !plugin.getConfig().showSplits())
 		{
 			return super.render(graphics);
 		}

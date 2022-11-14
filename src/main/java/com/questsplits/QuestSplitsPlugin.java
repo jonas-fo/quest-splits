@@ -118,7 +118,7 @@ public class QuestSplitsPlugin extends Plugin
 	public void onItemContainerChanged(ItemContainerChanged itemContainerChanged)
 	{
 		inventoryItems = new ArrayList<>();
-		if(!(itemContainerChanged.getContainerId() == InventoryID.INVENTORY.getId() || itemContainerChanged.getContainerId() == InventoryID.EQUIPMENT.getId()))
+		if(!(itemContainerChanged.getContainerId() == InventoryID.INVENTORY.getId() || itemContainerChanged.getContainerId() == InventoryID.EQUIPMENT.getId()) || keyItems == null)
 		{
 			return;
 		}
