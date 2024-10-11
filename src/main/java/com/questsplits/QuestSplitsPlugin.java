@@ -77,6 +77,7 @@ public class QuestSplitsPlugin extends Plugin
 	{
 		textFields = null;
 		overlay.setTextFields(null);
+		overlayManager.remove(overlay);
 	}
 
 	@Subscribe
