@@ -70,13 +70,13 @@ public class QuestSplitsPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		log.info("Example started!");
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
-		log.info("Example stopped!");
+		textFields = null;
+		overlay.setTextFields(null);
 	}
 
 	@Subscribe
